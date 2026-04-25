@@ -1,5 +1,4 @@
-import checkmm from 'checkmm';
-import { getCheckmmState, setCheckmmState } from 'checkmm/dist/state';
+import checkmm, { getCheckmmState, setCheckmmState } from 'checkmm';
 
 const editor = document.getElementById('editor');
 const validateButton = document.getElementById('validate');
