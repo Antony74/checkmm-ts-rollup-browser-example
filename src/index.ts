@@ -1,37 +1,19 @@
-import checkmm, { Assertion, type Hypothesis } from 'checkmm';
+import checkmm from 'checkmm';
 import { getCheckmmState, setCheckmmState } from 'checkmm/dist/state';
-import { createTokenArray } from 'checkmm/dist/tokens';
-
-type CheckmmState = ReturnType<typeof getCheckmmState>;
 
 const editor = document.getElementById('editor');
 const validateButton = document.getElementById('validate');
 const output = document.getElementById('output');
 
 if (editor && validateButton && output && editor instanceof HTMLTextAreaElement) {
-    const getCleanState = (): CheckmmState => {
-        const state = getCheckmmState();
-
-        return {
-            ...state,
-            data: '',
-            dataPosition: 0,
-            tokens: createTokenArray(),
-            constants: new Set<string>(),
-            hypotheses: new Map<string, Hypothesis>(),
-            variables: new Set<string>(),
-            assertions: new Map<string, Assertion>(),
-            scopes: [],
-            mmfilenamesalreadyencountered: new Set<string>,
-        };
-    };
+    const initialState = getCheckmmState();
 
     fetch('demo0.mm')
         .then((response) => response.text())
         .then((text) => (editor.value = text));
 
     validateButton.onclick = async () => {
-        setCheckmmState(getCleanState());
+        setCheckmmState(initialState);
         checkmm.data = editor.value;
 
         try {
