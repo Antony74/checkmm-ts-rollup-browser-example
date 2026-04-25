@@ -5,6 +5,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
 import replace from '@rollup/plugin-replace';
+import typescript from '@rollup/plugin-typescript';
 
 const replacement = path.resolve('src/empty.js');
 
@@ -16,6 +17,7 @@ export default {
     plugins: [
         resolve(),
         commonjs(),
+        typescript(),
         copy({
             targets: [
                 { src: 'src/index.html', dest: 'dist' },

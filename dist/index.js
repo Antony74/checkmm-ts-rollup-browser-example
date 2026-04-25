@@ -1279,26 +1279,78 @@ function requireCheckmm () {
 var checkmmExports = requireCheckmm();
 var checkmm = /*@__PURE__*/getDefaultExportFromCjs(checkmmExports);
 
+var state = {};
+
+var hasRequiredState;
+
+function requireState () {
+	if (hasRequiredState) return state;
+	hasRequiredState = 1;
+	var __importDefault = (state && state.__importDefault) || function (mod) {
+	    return (mod && mod.__esModule) ? mod : { "default": mod };
+	};
+	Object.defineProperty(state, "__esModule", { value: true });
+	state.setCheckmmState = state.getCheckmmState = void 0;
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+	const checkmm_1 = __importDefault(requireCheckmm());
+	const getCheckmmState = () => {
+	    return Object.assign({}, checkmm_1.default);
+	};
+	state.getCheckmmState = getCheckmmState;
+	const setCheckmmState = (state) => {
+	    for (const key in checkmm_1.default) {
+	        if (state[key] !== undefined) {
+	            checkmm_1.default[key] = state[key];
+	        }
+	    }
+	};
+	state.setCheckmmState = setCheckmmState;
+	
+	return state;
+}
+
+var stateExports = requireState();
+
+var tokensExports = requireTokens();
+
 const editor = document.getElementById('editor');
 const validateButton = document.getElementById('validate');
 const output = document.getElementById('output');
-
-if (editor && validateButton && output) {
+if (editor && validateButton && output && editor instanceof HTMLTextAreaElement) {
+    const getCleanState = () => {
+        const state = stateExports.getCheckmmState();
+        return {
+            ...state,
+            data: '',
+            dataPosition: 0,
+            tokens: tokensExports.createTokenArray(),
+            constants: new Set(),
+            hypotheses: new Map(),
+            variables: new Set(),
+            assertions: new Map(),
+            scopes: [],
+            mmfilenamesalreadyencountered: new Set,
+        };
+    };
     fetch('demo0.mm')
         .then((response) => response.text())
-        .then((text) => (editor.textContent = text));
-
+        .then((text) => (editor.value = text));
     validateButton.onclick = async () => {
-        checkmm.data = editor.textContent;
-        checkmm.dataPosition = 0;
-
+        stateExports.setCheckmmState(getCleanState());
+        checkmm.data = editor.value;
         try {
+            const fileInclusion = checkmm.readtokenstofileinclusion();
+            if (fileInclusion) {
+                throw new Error(`File inclusions not supported in this example`);
+            }
             checkmm.processtokens();
             output.textContent = 'Validated OK';
-        } catch (e) {
+        }
+        catch (e) {
             if (e instanceof Error) {
                 output.textContent = e.message;
-            } else {
+            }
+            else {
                 output.textContent = 'Unknown error';
             }
         }
