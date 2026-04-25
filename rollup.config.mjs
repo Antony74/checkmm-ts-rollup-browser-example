@@ -1,9 +1,12 @@
+import path from 'path';
+
 import copy from 'rollup-plugin-copy';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import alias from '@rollup/plugin-alias';
-import path from 'path';
 import replace from '@rollup/plugin-replace';
+
+const replacement = path.resolve('src/empty.js');
 
 export default {
     input: 'src/index.ts',
@@ -27,19 +30,18 @@ export default {
             entries: [
                 {
                     find: 'fs/promises',
-                    replacement: path.resolve('src/empty.js'),
+                    replacement,
                 },
                 {
                     find: 'path',
-                    replacement: path.resolve('src/empty.js'),
+                    replacement,
                 },
                 {
                     find: 'process',
-                    replacement: path.resolve('src/empty.js'),
+                    replacement,
                 },
             ],
         }),
         replace({ preventAssignment: true, process: null }),
     ],
-    treeshake: true,
 };
