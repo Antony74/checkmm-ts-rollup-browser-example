@@ -1,5 +1,5 @@
 {
-    "name": "checkmm-ts-vanilla-browser-example",
+    "name": "checkmm-ts-rollup-browser-example",
     "version": "1.0.0",
     "scripts": {
         "start": "rimraf dist && rollup --config && http-server dist"
