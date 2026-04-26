@@ -3,11 +3,7 @@ import path from 'path';
 import copy from 'rollup-plugin-copy';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import alias from '@rollup/plugin-alias';
-import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
-
-const replacement = path.resolve('src/empty.js');
 
 export default {
     input: 'src/index.ts',
@@ -28,22 +24,5 @@ export default {
                 },
             ],
         }),
-        alias({
-            entries: [
-                {
-                    find: 'fs/promises',
-                    replacement,
-                },
-                {
-                    find: 'path',
-                    replacement,
-                },
-                {
-                    find: 'process',
-                    replacement,
-                },
-            ],
-        }),
-        replace({ preventAssignment: true, process: null }),
     ],
 };
