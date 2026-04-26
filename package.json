@@ -8,7 +8,7 @@
     "license": "CC0-1.0",
     "description": "",
     "dependencies": {
-        "checkmm": "file:../checkmm-ts",
+        "checkmm": "^1.2.1",
         "github-fork-ribbon-css": "^0.2.3"
     },
     "devDependencies": {
