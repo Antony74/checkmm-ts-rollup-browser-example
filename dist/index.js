@@ -1,46 +1,6 @@
-function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
+var dist = {};
 
-function getAugmentedNamespace(n) {
-  if (Object.prototype.hasOwnProperty.call(n, '__esModule')) return n;
-  var f = n.default;
-	if (typeof f == "function") {
-		var a = function a () {
-			var isInstance = false;
-      try {
-        isInstance = this instanceof a;
-      } catch {}
-			if (isInstance) {
-        return Reflect.construct(f, arguments, this.constructor);
-			}
-			return f.apply(this, arguments);
-		};
-		a.prototype = f.prototype;
-  } else a = {};
-  Object.defineProperty(a, '__esModule', {value: true});
-	Object.keys(n).forEach(function (k) {
-		var d = Object.getOwnPropertyDescriptor(n, k);
-		Object.defineProperty(a, k, d.get ? d : {
-			enumerable: true,
-			get: function () {
-				return n[k];
-			}
-		});
-	});
-	return a;
-}
-
-var checkmm$1 = {};
-
-var empty = {};
-
-var empty$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	default: empty
-});
-
-var require$$1 = /*@__PURE__*/getAugmentedNamespace(empty$1);
+var checkmm = {};
 
 var std = {};
 
@@ -96,7 +56,7 @@ function requireStd () {
 	    return true;
 	};
 	const createstack = (arr) => {
-	    let container = arr !== null && arr !== void 0 ? arr : [];
+	    let container = arr ?? [];
 	    return {
 	        push: (item) => {
 	            container.push(item);
@@ -142,6 +102,9 @@ function requireTokens () {
 	    empty() {
 	        return !this.length;
 	    }
+	    clone() {
+	        return new TokenArray(...this);
+	    }
 	}
 	tokens.TokenArray = TokenArray;
 	const createTokenArray = (...params) => {
@@ -155,7 +118,7 @@ function requireTokens () {
 var hasRequiredCheckmm;
 
 function requireCheckmm () {
-	if (hasRequiredCheckmm) return checkmm$1;
+	if (hasRequiredCheckmm) return checkmm;
 	hasRequiredCheckmm = 1;
 	(function (exports$1) {
 		// Metamath database verifier
@@ -192,7 +155,7 @@ function requireCheckmm () {
 		//
 		// Please let me know of any bugs.
 		// https://github.com/Antony74/checkmm-ts/issues
-		var __createBinding = (checkmm$1 && checkmm$1.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		var __createBinding = (checkmm && checkmm.__createBinding) || (Object.create ? (function(o, m, k, k2) {
 		    if (k2 === undefined) k2 = k;
 		    var desc = Object.getOwnPropertyDescriptor(m, k);
 		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -203,12 +166,12 @@ function requireCheckmm () {
 		    if (k2 === undefined) k2 = k;
 		    o[k2] = m[k];
 		}));
-		var __setModuleDefault = (checkmm$1 && checkmm$1.__setModuleDefault) || (Object.create ? (function(o, v) {
+		var __setModuleDefault = (checkmm && checkmm.__setModuleDefault) || (Object.create ? (function(o, v) {
 		    Object.defineProperty(o, "default", { enumerable: true, value: v });
 		}) : function(o, v) {
 		    o["default"] = v;
 		});
-		var __importStar = (checkmm$1 && checkmm$1.__importStar) || (function () {
+		var __importStar = (checkmm && checkmm.__importStar) || (function () {
 		    var ownKeys = function(o) {
 		        ownKeys = Object.getOwnPropertyNames || function (o) {
 		            var ar = [];
@@ -225,26 +188,14 @@ function requireCheckmm () {
 		        return result;
 		    };
 		})();
-		var __awaiter = (checkmm$1 && checkmm$1.__awaiter) || function (thisArg, _arguments, P, generator) {
-		    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-		    return new (P || (P = Promise))(function (resolve, reject) {
-		        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-		        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-		        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-		        step((generator = generator.apply(thisArg, _arguments || [])).next());
-		    });
-		};
-		var __importDefault = (checkmm$1 && checkmm$1.__importDefault) || function (mod) {
-		    return (mod && mod.__esModule) ? mod : { "default": mod };
-		};
 		Object.defineProperty(exports$1, "__esModule", { value: true });
 		exports$1.Scope = exports$1.Assertion = exports$1.TokenArray = exports$1.Deque = void 0;
-		const promises_1 = __importDefault(require$$1);
-		const path_1 = __importDefault(require$$1);
 		const std_1 = __importStar(requireStd());
 		Object.defineProperty(exports$1, "Deque", { enumerable: true, get: function () { return std_1.Deque; } });
 		const tokens_1 = requireTokens();
 		Object.defineProperty(exports$1, "TokenArray", { enumerable: true, get: function () { return tokens_1.TokenArray; } });
+		let _fsp;
+		let _path;
 		let std = std_1.default;
 		let createTokenArray = tokens_1.createTokenArray;
 		let data = '';
@@ -255,25 +206,21 @@ function requireCheckmm () {
 		let variables = new Set();
 		// An axiom or a theorem.
 		class Assertion {
-		    constructor() {
-		        // Hypotheses of this axiom or theorem.
-		        this.hypotheses = [];
-		        this.disjvars = new Set();
-		        // Statement of axiom or theorem.
-		        this.expression = [];
-		    }
+		    // Hypotheses of this axiom or theorem.
+		    hypotheses = [];
+		    disjvars = new Set();
+		    // Statement of axiom or theorem.
+		    expression = [];
 		}
 		exports$1.Assertion = Assertion;
 		let assertions = new Map();
 		class Scope {
-		    constructor() {
-		        this.activevariables = new Set();
-		        // Labels of active hypotheses
-		        this.activehyp = [];
-		        this.disjvars = [];
-		        // Map from variable to label of active floating hypothesis
-		        this.floatinghyp = new Map();
-		    }
+		    activevariables = new Set();
+		    // Labels of active hypotheses
+		    activehyp = [];
+		    disjvars = [];
+		    // Map from variable to label of active floating hypothesis
+		    floatinghyp = new Map();
 		}
 		exports$1.Scope = Scope;
 		let scopes = new Array();
@@ -379,7 +326,7 @@ function requireCheckmm () {
 		    throw new Error('Unclosed comment');
 		};
 		let nexttokenskipcomments = () => {
-		    let token = '';
+		    let token;
 		    while ((token = nexttoken()).length && token === '$(') {
 		        readcomment();
 		    }
@@ -416,33 +363,39 @@ function requireCheckmm () {
 		        tokens.push(token);
 		    }
 		};
-		let readFile = (filename) => __awaiter(void 0, void 0, void 0, function* () { return promises_1.default.readFile(filename, { encoding: 'utf-8' }); });
+		let readFile = async (filename) => {
+		    await new Promise(resolve => setTimeout(resolve, 1));
+		    if (!_fsp) {
+		        throw new Error(`readFile called but no filesystem is defined`);
+		    }
+		    return _fsp.readFile(filename, { encoding: 'utf-8' });
+		};
 		let mmfilenamesalreadyencountered = new Set();
-		let readtokens = (filename_1, ...args_1) => __awaiter(void 0, [filename_1, ...args_1], void 0, function* (filename, lastFileInclusionStart = 0) {
+		let readtokens = async (filename, lastFileInclusionStart = 0) => {
 		    const alreadyencountered = mmfilenamesalreadyencountered.has(filename);
 		    if (alreadyencountered)
 		        return;
 		    mmfilenamesalreadyencountered.add(filename);
 		    try {
-		        data = data.slice(0, lastFileInclusionStart) + (yield readFile(filename)) + data.slice(dataPosition);
+		        data = data.slice(0, lastFileInclusionStart) + (await readFile(filename)) + data.slice(dataPosition);
 		        dataPosition = lastFileInclusionStart;
 		    }
-		    catch (_e) {
-		        throw new Error('Could not open ' + filename);
+		    catch (e) {
+		        throw new Error('Could not open ' + filename, { cause: e });
 		    }
 		    for (;;) {
 		        const fileInclusion = readtokenstofileinclusion();
 		        if (fileInclusion) {
-		            if (path_1.default) {
-		                fileInclusion.filename = path_1.default.normalize(path_1.default.join(path_1.default.dirname(filename), fileInclusion.filename));
+		            if (_path) {
+		                fileInclusion.filename = _path.normalize(_path.join(_path.dirname(filename), fileInclusion.filename));
 		            }
-		            yield readtokens(fileInclusion.filename, fileInclusion.startPosition);
+		            await readtokens(fileInclusion.filename, fileInclusion.startPosition);
 		        }
 		        else {
 		            break;
 		        }
 		    }
-		});
+		};
 		// Construct an Assertion from an Expression. That is, determine the
 		// mandatory hypotheses and disjoint variable restrictions.
 		// The Assertion is inserted into the assertions collection,
@@ -985,13 +938,13 @@ function requireCheckmm () {
 		    }
 		};
 		const EXIT_FAILURE = 1;
-		let main = (argv) => __awaiter(void 0, void 0, void 0, function* () {
+		let main = async (argv) => {
 		    try {
 		        if (argv.length !== 2) {
 		            console.error('Syntax: checkmm <filename>');
 		            return EXIT_FAILURE;
 		        }
-		        yield readtokens(argv[1]);
+		        await readtokens(argv[1]);
 		        processtokens();
 		        return 0;
 		    }
@@ -1004,8 +957,40 @@ function requireCheckmm () {
 		        }
 		        return EXIT_FAILURE;
 		    }
-		});
-		exports$1.default = {
+		};
+		// Are we being run as a cli program or a library?
+		if (typeof process !== 'undefined') {
+		    const executedScript = process.argv.length >= 2 ? process.argv[1] : '';
+		    const validCliSuffices = [
+		        __filename,
+		        '/.bin/checkmm',
+		        '/bin/checkmm',
+		        '/cli.js',
+		        '\\.bin\\checkmm',
+		        '\\bin\\checkmm',
+		        '\\cli.js',
+		    ];
+		    const isCliCommand = validCliSuffices.reduce((acc, suffix) => (acc ? acc : executedScript.slice(-suffix.length) === suffix), false);
+		    if (isCliCommand) {
+		        // We are being run as a cli program
+		        main(process.argv.slice(1)).then(exitCode => {
+		            process.exitCode = exitCode;
+		        });
+		    }
+		}
+		const api = {
+		    get fsp() {
+		        return _fsp;
+		    },
+		    set fsp(val) {
+		        _fsp = val;
+		    },
+		    get path() {
+		        return _path;
+		    },
+		    set path(val) {
+		        _path = val;
+		    },
 		    get data() {
 		        return data;
 		    },
@@ -1271,13 +1256,13 @@ function requireCheckmm () {
 		        main = _main;
 		    },
 		};
+		exports$1.default = api;
 		
-	} (checkmm$1));
-	return checkmm$1;
+	} (checkmm));
+	return checkmm;
 }
 
-var checkmmExports = requireCheckmm();
-var checkmm = /*@__PURE__*/getDefaultExportFromCjs(checkmmExports);
+var checkText = {};
 
 var state = {};
 
@@ -1286,64 +1271,161 @@ var hasRequiredState;
 function requireState () {
 	if (hasRequiredState) return state;
 	hasRequiredState = 1;
-	var __importDefault = (state && state.__importDefault) || function (mod) {
-	    return (mod && mod.__esModule) ? mod : { "default": mod };
-	};
-	Object.defineProperty(state, "__esModule", { value: true });
-	state.setCheckmmState = state.getCheckmmState = void 0;
-	/* eslint-disable @typescript-eslint/no-explicit-any */
-	const checkmm_1 = __importDefault(requireCheckmm());
-	const getCheckmmState = () => {
-	    return Object.assign({}, checkmm_1.default);
-	};
-	state.getCheckmmState = getCheckmmState;
-	const setCheckmmState = (state) => {
-	    for (const key in checkmm_1.default) {
-	        if (state[key] !== undefined) {
-	            checkmm_1.default[key] = state[key];
-	        }
-	    }
-	};
-	state.setCheckmmState = setCheckmmState;
-	
+	(function (exports$1) {
+		var __importDefault = (state && state.__importDefault) || function (mod) {
+		    return (mod && mod.__esModule) ? mod : { "default": mod };
+		};
+		Object.defineProperty(exports$1, "__esModule", { value: true });
+		exports$1.resetState = exports$1.setCheckmmState = exports$1.getCheckmmState = void 0;
+		/* eslint-disable @typescript-eslint/no-explicit-any */
+		const checkmm_1 = __importDefault(requireCheckmm());
+		const getCheckmmState = () => {
+		    return {
+		        ...checkmm_1.default,
+		        tokens: checkmm_1.default.tokens.clone(),
+		        constants: new Set(checkmm_1.default.constants),
+		        hypotheses: new Map(checkmm_1.default.hypotheses),
+		        variables: new Set(checkmm_1.default.variables),
+		        assertions: new Map(checkmm_1.default.assertions),
+		        scopes: [...checkmm_1.default.scopes],
+		        mmfilenamesalreadyencountered: new Set(checkmm_1.default.mmfilenamesalreadyencountered),
+		    };
+		};
+		exports$1.getCheckmmState = getCheckmmState;
+		const setCheckmmState = (state) => {
+		    for (const key in checkmm_1.default) {
+		        if (state[key] !== undefined) {
+		            checkmm_1.default[key] = state[key];
+		        }
+		    }
+		    const { tokens, constants, hypotheses, variables, assertions, scopes, mmfilenamesalreadyencountered } = state;
+		    if (tokens) {
+		        checkmm_1.default.tokens = tokens.clone();
+		    }
+		    if (constants) {
+		        checkmm_1.default.constants = new Set(constants);
+		    }
+		    if (hypotheses) {
+		        checkmm_1.default.hypotheses = new Map(hypotheses);
+		    }
+		    if (variables) {
+		        checkmm_1.default.variables = new Set(variables);
+		    }
+		    if (assertions) {
+		        checkmm_1.default.assertions = new Map(assertions);
+		    }
+		    if (scopes) {
+		        checkmm_1.default.scopes = [...scopes];
+		    }
+		    if (mmfilenamesalreadyencountered) {
+		        checkmm_1.default.mmfilenamesalreadyencountered = new Set(mmfilenamesalreadyencountered);
+		    }
+		};
+		exports$1.setCheckmmState = setCheckmmState;
+		const initialState = (0, exports$1.getCheckmmState)();
+		const resetState = () => {
+		    (0, exports$1.setCheckmmState)(initialState);
+		};
+		exports$1.resetState = resetState;
+		
+	} (state));
 	return state;
 }
 
-var stateExports = requireState();
+var hasRequiredCheckText;
 
-var tokensExports = requireTokens();
+function requireCheckText () {
+	if (hasRequiredCheckText) return checkText;
+	hasRequiredCheckText = 1;
+	var __importDefault = (checkText && checkText.__importDefault) || function (mod) {
+	    return (mod && mod.__esModule) ? mod : { "default": mod };
+	};
+	Object.defineProperty(checkText, "__esModule", { value: true });
+	checkText.checkText = void 0;
+	const checkmm_1 = __importDefault(requireCheckmm());
+	const state_1 = requireState();
+	const checkText$1 = async (mainMmText, readIncludedFile) => {
+	    (0, state_1.resetState)();
+	    const checkTextRecursive = async (filename, mmText, lastFileInclusionStart) => {
+	        const alreadyencountered = checkmm_1.default.mmfilenamesalreadyencountered.has(filename);
+	        if (alreadyencountered) {
+	            return;
+	        }
+	        checkmm_1.default.mmfilenamesalreadyencountered.add(filename);
+	        checkmm_1.default.data =
+	            checkmm_1.default.data.slice(0, lastFileInclusionStart) + mmText + checkmm_1.default.data.slice(checkmm_1.default.dataPosition);
+	        checkmm_1.default.dataPosition = lastFileInclusionStart;
+	        for (;;) {
+	            const fileInclusion = checkmm_1.default.readtokenstofileinclusion();
+	            if (fileInclusion) {
+	                if (!readIncludedFile) {
+	                    throw new Error(`checkText: $[ ${fileInclusion.filename} $] encountered but readIncludedFile was not specified`);
+	                }
+	                await checkTextRecursive(fileInclusion.filename, await readIncludedFile(fileInclusion.filename), fileInclusion.startPosition);
+	            }
+	            else {
+	                break;
+	            }
+	        }
+	    };
+	    await checkTextRecursive('', mainMmText, 0);
+	    checkmm_1.default.processtokens();
+	};
+	checkText.checkText = checkText$1;
+	
+	return checkText;
+}
+
+var hasRequiredDist;
+
+function requireDist () {
+	if (hasRequiredDist) return dist;
+	hasRequiredDist = 1;
+	(function (exports$1) {
+		var __createBinding = (dist && dist.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    var desc = Object.getOwnPropertyDescriptor(m, k);
+		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+		      desc = { enumerable: true, get: function() { return m[k]; } };
+		    }
+		    Object.defineProperty(o, k2, desc);
+		}) : (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    o[k2] = m[k];
+		}));
+		var __exportStar = (dist && dist.__exportStar) || function(m, exports$1) {
+		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports$1, p)) __createBinding(exports$1, m, p);
+		};
+		var __importDefault = (dist && dist.__importDefault) || function (mod) {
+		    return (mod && mod.__esModule) ? mod : { "default": mod };
+		};
+		Object.defineProperty(exports$1, "__esModule", { value: true });
+		const checkmm_1 = __importDefault(requireCheckmm());
+		__exportStar(requireCheckText(), exports$1);
+		__exportStar(requireState(), exports$1);
+		__exportStar(requireStd(), exports$1);
+		__exportStar(requireTokens(), exports$1);
+		exports$1.default = checkmm_1.default;
+		
+	} (dist));
+	return dist;
+}
+
+var distExports = requireDist();
 
 const editor = document.getElementById('editor');
 const validateButton = document.getElementById('validate');
 const output = document.getElementById('output');
-if (editor && validateButton && output && editor instanceof HTMLTextAreaElement) {
-    const getCleanState = () => {
-        const state = stateExports.getCheckmmState();
-        return {
-            ...state,
-            data: '',
-            dataPosition: 0,
-            tokens: tokensExports.createTokenArray(),
-            constants: new Set(),
-            hypotheses: new Map(),
-            variables: new Set(),
-            assertions: new Map(),
-            scopes: [],
-            mmfilenamesalreadyencountered: new Set,
-        };
-    };
+if (editor &&
+    validateButton &&
+    output &&
+    editor instanceof HTMLTextAreaElement) {
     fetch('demo0.mm')
         .then((response) => response.text())
         .then((text) => (editor.value = text));
     validateButton.onclick = async () => {
-        stateExports.setCheckmmState(getCleanState());
-        checkmm.data = editor.value;
         try {
-            const fileInclusion = checkmm.readtokenstofileinclusion();
-            if (fileInclusion) {
-                throw new Error(`File inclusions not supported in this example`);
-            }
-            checkmm.processtokens();
+            await distExports.checkText(editor.value);
             output.textContent = 'Validated OK';
         }
         catch (e) {
